@@ -13,3 +13,29 @@ Fixed minor bugs:
 Version 0.6.1
 
   - Added stride parameter to range windows. 
+    Examples:
+	When filled, the following window will "stride" forward 10 seconds.
+	Once moved, the window will be completely empty:
+
+	select * from S [range 10 seconds stride 10 seconds];
+
+	
+	When filled, the following window will "stride" forward 5 seconds.
+	The window will delete all tuples with time T lower than the new 
+	window start time:
+	
+	select * from S [range 10 seconds stride 5 seconds];
+
+	
+	The following queries define two windows which are semantically equal:
+
+	select * from S [range 10 seconds stride 1 seconds];
+	select * from S [range 10 seconds];
+
+
+	All units previously supported by range are supported by the new 
+	stride.
+	A range smaller than the stride gives undefined results. 
+	
+	If you have any questions about the stride parameter you can contact 
+	me at robert@kajic.com
