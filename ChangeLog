@@ -14,24 +14,34 @@ Version 0.6.1
 
   - Added stride parameter to range windows. 
     Examples:
+	
 	When filled, the following window will "stride" forward 10 seconds.
 	Once moved, the window will be completely empty:
 
 	select * from S [range 10 seconds stride 10 seconds];
-
+	-----
 	
 	When filled, the following window will "stride" forward 5 seconds.
 	The window will delete all tuples with time T lower than the new 
 	window start time:
 	
 	select * from S [range 10 seconds stride 5 seconds];
+	-----
+	
+	The following window is equivalent to the "Today Window" described at 
+	http://infolab.stanford.edu/stream/cql-benchmark.html. It can be used 
+	to define the ExpOutStr stream in the following way:
 
+	SELECT RSTREAM(query_id, E.car_id, -1 * SUM(credit))
+	FROM ExpQueryStr [NOW] as Q, AccTransStr[RANGE 1 DAY STRIDE 1 DAY] as T
+	WHERE Q.car_id = T.car_id;
+	-----
 	
 	The following queries define two windows which are semantically equal:
 
 	select * from S [range 10 seconds stride 1 seconds];
 	select * from S [range 10 seconds];
-
+	-----
 
 	All units previously supported by range are supported by the new 
 	stride.
