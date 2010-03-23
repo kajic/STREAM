@@ -13,7 +13,7 @@ table : register stream S (A integer, B float, C byte, D char(4));
 # that the relative path of the source is valid.
 #
 
-source : ../data/stream1.dat
+source : examples/data/S.dat
 
 #
 # The query over S
@@ -25,13 +25,16 @@ query : select * from S;
 # The file where the output of the query is written to
 #
 
-dest : ../data/query1.out
+dest : qout1
 
 #
 # A different query ...
 #
 
-query : select * from S [range 5 seconds today];
+query : select * from S where A = 5;
 
-dest : ../data/query2.out
+#
+# ... whose output goes to the file
+
+dest : qout2
 

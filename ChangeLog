@@ -13,39 +13,35 @@ Fixed minor bugs:
 Version 0.6.1
 
   - Added stride parameter to range windows. 
-    Examples:
-	
-	When filled, the following window will "stride" forward 10 seconds.
-	Once moved, the window will be completely empty:
 
-	select * from S [range 10 seconds stride 10 seconds];
-	-----
-	
-	When filled, the following window will "stride" forward 5 seconds.
-	The window will delete all tuples with time T lower than the new 
-	window start time:
-	
-	select * from S [range 10 seconds stride 5 seconds];
-	-----
-	
-	The following window is equivalent to the "Today Window" described at 
-	http://infolab.stanford.edu/stream/cql-benchmark.html. It can be used 
-	to define the ExpOutStr stream in the following way:
+	A stride must be specified immediately after the window operator
+	RANGE. It is currently not possible to define a stride together
+	with the ROWS operator. The stride is expressed using a time
+	specification which follows the exact same rules as range.
+	Finally, specifying a range smaller than the stride has undefined
+	results.
 
-	SELECT RSTREAM(query_id, E.car_id, -1 * SUM(credit))
-	FROM ExpQueryStr [NOW] as Q, AccTransStr[RANGE 1 DAY STRIDE 1 DAY] as T
+	The following example query defines a window with a range of 10
+	seconds, and a stride of 5 seconds:
+
+	SELECT * 
+	FROM S [RANGE 10 SECONDS STRIDE 5 SECONDS];
+
+	When this window contains a set of stream tuples with time stamps
+	ranging for 10 seconds, and a new tuple arrives with a time stamp
+	which cannot be included in the range, the window will make a
+	stride of 5 seconds. This will effectively delete all tuples with
+	time stamps ranging from the windows original position to the
+	windows new position.
+	
+	The following window is equivalent to the ``Today Window''
+	described at http://infolab.stanford.edu/stream/cql-benchmark.html. 
+	It can be used to define the ExpOutStr stream in the following
+	way:
+
+	SELECT RSTREAM(query_id, E.car_id, -1 * SUM(credit)) 
+	FROM ExpQueryStr [NOW] as Q, AccTransStr [RANGE 1 DAY STRIDE 1 DAY] as T 
 	WHERE Q.car_id = T.car_id;
-	-----
-	
-	The following queries define two windows which are semantically equal:
-
-	select * from S [range 10 seconds stride 1 seconds];
-	select * from S [range 10 seconds];
-	-----
-
-	All units previously supported by range are supported by the new 
-	stride.
-	A range smaller than the stride gives undefined results. 
 	
 	If you have any questions about the stride parameter you can contact 
 	me at robert@kajic.com
