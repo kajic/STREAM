@@ -1,0 +1,11 @@
+
+#
+# Test the partition window operator
+#
+table : register stream S (G integer, A integer);
+
+source : test/data/S2.dat
+
+query : select * from S [Partition by G Rows 1];
+
+dest : test/out/test10

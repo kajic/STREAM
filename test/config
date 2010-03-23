@@ -1,0 +1,15 @@
+
+# 32 MB
+MEMORY_SIZE = 33554432
+
+# Queue Size in page
+QUEUE_SIZE = 1
+
+# Shared queue size in pages
+SHARED_QUEUE_SIZE = 30
+
+# 
+INDEX_THRESHOLD = 0.85
+
+# Scheduler iterations
+RUN_TIME = 1000 

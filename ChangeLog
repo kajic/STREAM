@@ -1,0 +1,15 @@
+Version 0.5.0
+
+The first public release version 
+
+Version 0.5.1
+
+Fixed minor bugs:
+
+  - Relation Source operator
+
+  - 2 bugs in partition window store
+
+Version 0.6.1
+
+  - Added stride parameter to range windows. 

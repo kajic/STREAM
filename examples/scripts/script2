@@ -1,0 +1,45 @@
+#
+# Example Script 2: 
+#
+
+# 
+# Register the stream S with 4 attributes
+#
+
+table : register stream S (A integer, B float, C byte, D char(4));
+
+#
+# The location of the stream.  When you actually run the script make sure
+# that the relative path of the source is valid.
+#
+
+source : examples/data/S.dat
+
+#
+# Create a named query (view) over S which can be used in subsequent
+# queries. The query selects all tuples of S with a even number in their A 
+# attribute.
+#
+
+vquery : select * from S Where (A / 2) * 2 = A;
+
+# 
+# We need to name the output of the query so that it can referenced
+# later.  The syntax for doing so is similar to syntax for registering
+# base tables, except we use "vtable" identifier instead of "table"
+#
+
+vtable : register stream EvenS (A integer, B float, C byte, D char(4));
+
+#
+# Now we query this view
+#
+
+query : select * from EvenS Where A < 6;
+
+#
+# And its output goes to 
+#
+
+dest : qout
+

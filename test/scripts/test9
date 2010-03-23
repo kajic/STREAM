@@ -1,0 +1,11 @@
+
+#
+# Test a relation source
+#
+table : register relation R (A integer);
+
+source : test/data/R1.dat
+
+query : select * from R;
+
+dest : test/out/test9

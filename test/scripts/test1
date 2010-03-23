@@ -1,0 +1,12 @@
+#
+# test1: Test the basic stream source operator
+#
+
+table : register stream S (A integer, B float, C byte, D char(4));
+
+source : test/data/S3.dat
+
+query : select * from S;
+
+dest : test/out/test1
+

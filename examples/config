@@ -1,0 +1,43 @@
+#
+# Config file for the STREAM server
+#
+# None of the config parameters are strictly necessary.  If the value for some
+# parameter is not specified, the system assumes reasonable default values
+#
+
+#
+# The size of the memory in bytes that is used during the execution of the system. 
+#
+# 32 MB
+#
+
+MEMORY_SIZE = 33554432
+
+#
+# Queues have fixed sizes.  A smaller value of QUEUE_SIZE means that the operators
+# execute is a more tightly coupled manner.  This should be an integer value > 1.
+# The queue size is specified in number of pages.  A page is the atomic unit of memory 
+# It is set to 4096 bytes.
+#
+# 
+
+QUEUE_SIZE = 1
+
+#
+# Shared queue size in pages.  A shared queue is a queue which has one writer operator
+# and many read operators.  It is useful to set this value higher than QUEUE_SIZE.
+#
+
+SHARED_QUEUE_SIZE = 30
+
+#
+# This should be a fraction (between 0 & 1).  It is similar to the threshold value
+# used in a disk-based linear hash table.  A smaller value leads to cheaper index updates
+# but lookups could be costlier and vice-versa.
+#  
+INDEX_THRESHOLD = 0.85
+
+#
+# Long long int value that roughly translates to the duration for which the system is run
+#
+RUN_TIME = 0

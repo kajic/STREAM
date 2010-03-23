@@ -1,0 +1,15 @@
+#
+# Test3 : Test join operator
+#
+
+table : register stream S1 (A integer);
+
+source : test/data/S1.dat
+
+table : register stream S2 (A integer);
+
+source : test/data/S1.dat
+
+query : select * from S1 as X, S2 as Y Where X.A = Y.A;
+
+dest : test/out/test3

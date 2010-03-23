@@ -1,0 +1,11 @@
+#
+# Test7 : Test distinct operator
+#
+
+table : register stream S (A integer);
+
+source : test/data/S1.dat
+
+query : Select * From S [Rows 2];
+
+dest : test/out/test7

@@ -1,0 +1,15 @@
+#
+# Test2: test select & project & views
+#
+
+table : register stream S (A integer);
+
+source : test/data/S1.dat
+
+vquery : select A/2, A from S where (S.A / 2) * 2 = S.A;
+
+vtable : register stream VS (A integer, B integer);
+
+query : select A, B from VS;
+
+dest : test/out/test2

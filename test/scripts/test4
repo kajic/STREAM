@@ -1,0 +1,15 @@
+#
+# Test4 : Test stream-join operator
+#
+
+table : register stream S1 (A integer);
+
+source : test/data/S1.dat
+
+table : register stream S2 (A integer);
+
+source : test/data/S1.dat
+
+query : Rstream(select * from S1 [Now], S2 Where S1.A = S2.A);
+
+dest : test/out/test4

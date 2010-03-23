@@ -1,0 +1,11 @@
+#
+# Test5 : Test group by aggregation operator
+#
+
+table : register stream S (G integer, A integer);
+
+source : test/data/S2.dat
+
+query : Select G, Sum(A), Count(A), Max(A), Min(A) From S Group By G;
+
+dest : test/out/test5

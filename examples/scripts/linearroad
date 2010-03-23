@@ -1,0 +1,418 @@
+#
+# This is the script we use to run the linearroad benchmark 
+# Note that you need to get the data files from the benchmark site to be
+# able to run it.
+#
+
+
+#----------------------------------------------------------------------
+#
+# Common input stream
+table : register stream CommonInputStr (Type integer, Scd integer, Vid integer, Speed integer, XWay integer, Lane integer, Dir integer, Seg integer, Pos integer, Qid integer, Sinit integer, Send integer, Dow integer, Tod integer, Dy integer);
+
+source : /lfs/0/tmp/arvind/linearroad/xway
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# Minute Stream: 
+
+table : register stream MinStr (Mnt integer);
+
+source : /lfs/0/tmp/arvind/linearroad/minstr
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# Minute End stream (used to trigger off calculations for the prev. minute
+# 
+
+table : register stream MinEndStr (Mnt integer);
+
+source : /lfs/0/tmp/arvind/linearroad/minendstr
+
+#
+#----------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------
+#
+# Previous minute stream
+
+vquery : select Mnt - 1 from MinStr;
+vtable : register stream PrevMinStr (Mnt integer); 
+
+#
+#---------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# Minute Segment Stream
+#
+table : register stream MinSegStr (Mnt integer, XWay integer, Dir integer, Seg integer);
+
+source : /lfs/0/tmp/arvind/linearroad/minsegstr
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+# 
+# Filtered input stream
+
+vquery : select Vid, XWay, Dir, Pos from CommonInputStr where Type = 0;
+vtable : register stream FiltInputStr (Vid integer, XWay integer, Dir integer, Pos integer);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# (Last 2 minutes) Distinct Vehicle positions and their counts
+
+vquery : select Vid, XWay, Dir, Pos, Count(*) from FiltInputStr [Range 120 Seconds] group by Vid, XWay, Dir, Pos;
+vtable : register Relation VehPos (Vid integer, XWay integer, Dir integer, Pos integer, Num integer);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# StopPos (x,d,p,n): n vehicles currently stopped at position p
+
+vquery : select XWay, Dir, Pos, Count(*) from VehPos where Num = 4 group by XWay, Dir, Pos;
+vtable : register Relation StopPos (XWay integer, Dir integer, Pos integer, NumVehicle integer);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# AccSeg (x,d,s): Accident in segment s (currently)
+
+vquery : select XWay, Dir, Pos/5280 from StopPos where NumVehicle > 1;
+vtable : register Relation AccSeg (XWay integer, Dir integer, Seg integer);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# AccSegMin (m,x,d,s): acc_in_seg () of the paper
+
+vquery : Istream (select Mnt, XWay, Dir, Seg from MinStr [Rows 1], AccSeg);
+vtable : register stream AccSegMin (Mnt integer, XWay integer, Dir integer, Seg integer);
+
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#
+# Affected Segment (eastbound)
+#
+
+vquery : select M.Mnt, M.XWay, M.Dir, M.Seg from MinSegStr as M, AccSegMin as A where M.Mnt = A.Mnt and M.XWay = A.XWay and M.Dir = 0 and A.Dir = 0 and M.Seg >= A.Seg and M.Seg <= A.Seg + 4; 
+vtable : register relation AffSegEast (Mnt integer, XWay integer, Dir integer, Seg integer);
+
+#
+#----------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#
+# Affected Segment (westbound)
+#
+
+vquery : select M.Mnt, M.XWay, M.Dir, M.Seg from MinSegStr as M, AccSegMin as A where M.Mnt = A.Mnt and M.XWay = A.XWay and M.Dir = 1 and A.Dir = 1 and M.Seg >= A.Seg and M.Seg <= A.Seg + 4; 
+vtable : register relation AffSegWest (Mnt integer, XWay integer, Dir integer, Seg integer);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# All affected segments
+#
+
+vquery : AffSegWest Union AffSegEast;
+
+vtable : register relation AffSeg (Mnt integer, XWay integer, Dir integer, Seg integer);
+
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#
+# Non affected (tollable segments)
+#
+
+vquery : MinSegStr Except AffSeg; 
+
+vtable : register relation NonAffSegInt (Mnt integer, XWay integer, Dir integer, Seg integer);
+
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+#
+# Non affected segments (segments normalized)
+#
+
+vquery : select Mnt, XWay * 1000 + Dir * 100 + Seg from NonAffSegInt;
+vtable : register relation NonAffSeg (Mnt integer, Seg integer);
+
+#
+#----------------------------------------------------------------------
+
+#######################################################################
+#
+# Segment volume logic
+#
+
+#----------------------------------------------------------------------
+#
+# Segment Stream (slightly different from SegStr1
+#
+
+vquery : select Scd/60, Vid, Dir*100+Seg from CommonInputStr where Type = 0;
+vtable : register stream SegStr2 (Mnt integer, Vid integer, Seg integer);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# Distinct car reports in segments (by minute)
+#
+
+vquery : select distinct * from SegStr2 [Range 61 Seconds];
+vtable : register relation VolSMV (Mnt integer, Vid integer, Seg integer);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# Volume of cars by segment, minute
+#
+
+vquery : select Mnt, Seg, Count(*) from VolSMV group by Mnt, Seg;
+vtable : register relation VolSM (Mnt integer, Seg integer, Vol integer);
+
+#
+#----------------------------------------------------------------------
+
+#######################################################################
+#
+# Avg speed logic
+#
+
+#----------------------------------------------------------------------
+# 
+# Segment stream (vehicles, segments, speed)
+#
+
+vquery : select Scd/60, Vid, Dir*100+Seg, Speed from CommonInputStr where Type = 0;
+
+vtable : register stream SegSpdStr (Mnt integer, Vid integer, Seg integer, Speed integer);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# Avg speed of a vehicle by segment & minute
+#
+
+vquery : select Mnt, Vid, Seg, Avg(Speed) from SegSpdStr [Range 61 Seconds] group by Mnt, Vid, Seg;
+
+vtable : register relation SMVAvgRel (Mnt integer, Vid integer, Seg integer, AvgSpd float);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# Avg speed of a segment by minute
+#
+
+vquery : select Mnt, Seg, Avg(AvgSpd) from SMVAvgRel group by Mnt, Seg;
+
+vtable : register relation SMAvgRel (Mnt integer, Seg integer, AvgSpd float);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# Avg speed of sigment by minute, streamed out @ end of minute
+#
+
+vquery : Rstream (select A.Mnt, A.Seg, AvgSpd From MinEndStr [Now] as M, SMAvgRel as A where M.Mnt = A.Mnt);
+
+vtable : register stream SMAvgStr (Mnt integer, Seg integer, AvgSpd float);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# 5 Minute avg speed of a segment
+#
+
+vquery : select Seg, Avg(AvgSpd) from SMAvgStr [Range 5 Minutes] group by Seg;
+
+vtable : register stream SM5AvgRel (Seg integer, AvgSpd float);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# 5 Minute avg speed of a segment, streamed at end of the period
+#
+
+vquery : Rstream (Select M.Mnt, A.Seg, A.AvgSpd From MinEndStr [Now] as M, SM5AvgRel as A);
+
+vtable : register stream SM5AvgStr (Mnt integer, Seg integer, AvgSpd float);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# Segment toll stream
+#
+
+vquery : Rstream (select M.Mnt, A.Seg from PrevMinStr [Now] as M, NonAffSeg as A where M.Mnt = A.Mnt);
+vtable : register stream SegTollStr1 (Mnt integer, Seg integer);
+
+vquery : Rstream (select M.Mnt, M.Seg, (V.Vol - 50) * (V.Vol - 50) from SegTollStr1 [Now] as M, VolSM as V where M.Mnt = V.Mnt and M.Seg = V.Seg and V.Vol > 50);
+vtable : register stream SegTollStr2 (Mnt integer, Seg integer, Toll integer);
+
+vquery : Rstream (select M.Seg, M.Toll, A.AvgSpd from SegTollStr2 [Now] as M, SM5AvgStr as A where M.Mnt = A.Mnt and M.Seg = A.Seg and A.AvgSpd < 40.0);
+
+vtable : register stream SegTollStr (Seg integer, Toll integer, Lav float);
+
+#
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+#
+# Segment tolls for the current minute
+#
+
+vquery : select * from SegTollStr [Range 1 Minute];
+vtable : register relation SegTollRel (Seg integer, Toll integer, Lav float);
+
+#---------------------------------------------------------------------
+# 
+# Stream of vehicle segments
+#
+
+vquery : select Vid, XWay*1000 + Dir*100 + Seg from CommonInputStr where Type = 0 and Lane != 4;
+
+vtable : register stream SegStr1 (Vid integer, Seg integer);
+
+#
+#----------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# 
+# Segment entry stream
+#
+
+vquery : Istream (select Vid, Seg from SegStr1 [Range 30 Seconds]);
+
+vtable : register stream SegEntryStr (Vid integer, Seg integer);
+
+#
+#----------------------------------------------------------------------
+
+vquery : Rstream (select E.Vid, E.Seg, T.Lav, T.Toll from SegEntryStr [Now] as E, SegTollRel as T where E.Seg = T.Seg);
+
+vtable : register stream OutStr (Vid integer, Seg integer, Lav float, Toll integer);
+
+query : select Vid, Lav, Toll from OutStr;
+
+dest : tollstr
+
+#######################################################################
+#
+# Accident notification
+#
+
+vquery : Rstream (Select M.Mnt, A.XWay*1000 + A.Dir*100 + A.Seg from PrevMinStr [Now] as M, AffSeg as A where M.Mnt = A.Mnt);
+
+vtable: register stream PrevMinAffSeg (Mnt integer, Seg integer);
+
+query : Rstream(select E.Vid, E.Seg From SegEntryStr[Now] as E, PrevMinAffSeg [Range 1 Minute] as P where E.Seg = P.Seg);
+
+dest : accnot
+
+#
+#######################################################################
+
+#######################################################################
+#
+# Account balance
+#
+
+#
+# TollReports
+# 
+
+vquery : select Vid, Seg, Toll from OutStr;
+
+vtable : register stream TollReportStr (Vid integer, Seg integer, Toll integer);
+
+#
+# Vehicle Exits - 
+#
+
+vquery : select Vid, Seg, 0 from CommonInputStr where Type = 0 and Lane = 4;
+
+vtable : register stream VehExitStr (Vid integer, Seg integer, Toll integer);
+
+#
+# VehicleExits union TollReports:
+#
+
+vquery : TollReportStr Union VehExitStr;
+
+vtable : register stream ModTollReportStr (Vid integer, Seg integer, Toll integer);
+
+#
+# SegChangeStr: Vid changes from one segment to other
+#
+
+vquery : Rstream(select I.Vid, P.Seg From CommonInputStr [Now] as I, CommonInputStr [Range 30 Seconds] as P Where I.Vid = P.Vid and I.Seg != P.Seg);
+
+vtable : register stream SegChangeStr (Vid integer, PrevSeg integer);
+
+#
+# TollAssessStr
+#
+
+vquery : Rstream (Select C.Vid, T.Toll From SegChangeStr [Now] as C, ModTollReportStr [Partition By T.Vid Rows 1] as T Where C.Vid = T.Vid and C.PrevSeg = T.Seg);
+
+vtable : register stream TollAssessStr (Vid integer, Toll integer);
+
+#
+# Account balance
+#
+
+vquery : Select Vid, Sum(Toll) From TollAssessStr Group By Vid;
+
+vtable : register relation AccBal (Vid integer, Bal integer);
+
+#
+# Balance requests
+#
+
+query : Rstream (Select I.Qid, A.Bal From CommonInputStr [Now] as I, AccBal as A Where I.Vid = A.Vid and I.Type = 2);
+
+dest: accbal

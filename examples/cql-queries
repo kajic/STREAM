@@ -1,0 +1,103 @@
+#
+# This file contains example CQL queries.  
+#
+# For the queries below, assume a stream:
+#
+#   S (A integer, B integer, C float, D char (10))
+#
+# and a relation:
+#
+#   R (A integer, B integer, C float, D char (10))
+#
+
+#------------------------------------------------------------
+# Trivial queries
+#------------------------------------------------------------
+
+select * from S;
+
+select * from R;
+
+# Note: case insensitive
+
+SELECT * FROM R;
+
+#------------------------------------------------------------
+# Selection conditions (where clause)
+#------------------------------------------------------------
+
+select * from S where A = 5;
+
+select * from S where A > 5 and A < 10;
+
+# Attribute A is even.  Note '/' is integer division
+
+select * from S where (A/2)*2 = A;
+
+select * from S where A = B + 2;
+
+select * from S where A > 5 and D = "test";
+
+#------------------------------------------------------------
+# Projects
+#------------------------------------------------------------
+
+select A, B, C, D from S;
+
+# Basic arithmetic allowed in project expressions
+
+select A + B * 2, 5.2 from S;
+
+#------------------------------------------------------------
+# Group by aggregation
+#------------------------------------------------------------
+
+select A, SUM(B), MAX(B), MIN(B), AVG(B), COUNT (B) from S group by A;
+
+select distinct A + B from S;
+
+#------------------------------------------------------------
+# Windows
+#------------------------------------------------------------
+
+select * from S [Now];
+
+select * from S [Rows 1];
+
+select * from S [Range 1 Second];
+
+select * from S [Range 2 Minutes];
+
+select * from S [Range 5 Hours];
+
+select * from S [Partition by A Rows 5];
+
+
+#------------------------------------------------------------
+# Joins
+#------------------------------------------------------------
+
+# note: Variable renaming using 'as'
+
+select * from S as S1, S as S2 where S1.A = S2.A;
+
+select * from S [Now] as S1, S [Range 30 Seconds] as S2 where S1.A = S2.A;
+
+select * from S [Now] as S1, S [Partition by S2.A Rows 1] as S2 where S1.A = S2.A;
+
+#------------------------------------------------------------
+# Istream, Dstream, Rstream 
+#------------------------------------------------------------
+
+Istream (Select * from S where A = 5);
+
+Dstream (Select * from S where A = 5);
+
+# Transformed to the equivalent: "select A from S where A = 5;"
+
+Rstream (select A from S [Now] where A = 5);
+
+# Transformed in a "stream-join" that does not use Rstream or Now window
+
+Rstream (select S.A from S [Now], R  Where S.A = R.A);
+
