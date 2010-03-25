@@ -226,7 +226,15 @@ int RangeWindow::strideExpireTuples()
     int rc;
 
     if (lastInputTs >= windowStart+windowSize) {
+        // most often a singe stride should be enough to include the new tuple
         windowStart += strideSize;
+
+        // but if it isn't we must jump as many strides as is necessary
+        if (lastInputTs >= windowStart+windowSize) {
+            windowStart = (lastInputTs / strideSize) * strideSize;
+        }
+
+        // expire old tuples
         if ((rc = expireTuples (windowStart-1)) != 0)
             return rc;
     }
