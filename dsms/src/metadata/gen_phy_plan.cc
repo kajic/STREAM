@@ -285,7 +285,7 @@ int PlanManagerImpl::mk_range_win (Logical::Operator *logPlan,
 	
 	// window specification:
 	range_win -> u.RANGE_WIN.timeUnits = logPlan -> u.RANGE_WIN.timeUnits;
-    range_win -> u.RANGE_WIN.strideUnits = logPlan -> u.RANGE_WIN.strideUnits;
+    range_win -> u.RANGE_WIN.slideUnits = logPlan -> u.RANGE_WIN.slideUnits;
 	
 	phyPlan = range_win;
 

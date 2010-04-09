@@ -176,7 +176,7 @@ Operator *Logical::mk_reln_source(unsigned int varId, unsigned int relnId)
 
 // Range window
 Operator *Logical::mk_range_window(Operator *input, unsigned int timeUnits, 
-  unsigned int strideUnits)
+  unsigned int slideUnits)
 {
 	Operator *op = newop(LO_RANGE_WIN);
 	
@@ -193,7 +193,7 @@ Operator *Logical::mk_range_window(Operator *input, unsigned int timeUnits,
 	op -> bStream = false;	
 	
 	op -> u.RANGE_WIN.timeUnits = timeUnits;
-    op -> u.RANGE_WIN.strideUnits = strideUnits;
+    op -> u.RANGE_WIN.slideUnits = slideUnits;
 	
 	input -> output = op;
 	

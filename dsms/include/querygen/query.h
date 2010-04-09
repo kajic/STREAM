@@ -43,7 +43,7 @@ namespace Semantic {
       
 			// Time-based window.
 			struct {
-                unsigned int strideUnits;
+                unsigned int slideUnits;
 				unsigned int timeUnits;
 			} RANGE;
       

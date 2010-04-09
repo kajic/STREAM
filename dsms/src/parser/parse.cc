@@ -89,7 +89,7 @@
      RW_SUM = 278,
      RW_ROWS = 279,
      RW_RANGE = 280,
-     RW_STRIDE = 281,
+     RW_SLIDE = 281,
      RW_NOW = 282,
      RW_PARTITION = 283,
      RW_UNBOUNDED = 284,
@@ -138,7 +138,7 @@
 #define RW_SUM 278
 #define RW_ROWS 279
 #define RW_RANGE 280
-#define RW_STRIDE 281
+#define RW_SLIDE 281
 #define RW_NOW 282
 #define RW_PARTITION 283
 #define RW_UNBOUNDED 284
@@ -573,7 +573,7 @@ static const char *const yytname[] =
   "RW_RELATION", "RW_ISTREAM", "RW_DSTREAM", "RW_RSTREAM", "RW_SELECT",
   "RW_DISTINCT", "RW_FROM", "RW_WHERE", "RW_GROUP", "RW_BY", "RW_AND",
   "RW_AS", "RW_UNION", "RW_EXCEPT", "RW_AVG", "RW_MIN", "RW_MAX",
-  "RW_COUNT", "RW_SUM", "RW_ROWS", "RW_RANGE", "RW_STRIDE", "RW_NOW",
+  "RW_COUNT", "RW_SUM", "RW_ROWS", "RW_RANGE", "RW_SLIDE", "RW_NOW",
   "RW_PARTITION", "RW_UNBOUNDED", "RW_SECOND", "RW_MINUTE", "RW_HOUR",
   "RW_DAY", "T_EQ", "T_LT", "T_LE", "T_GT", "T_GE", "T_NE", "RW_INTEGER",
   "RW_FLOAT", "RW_CHAR", "RW_BYTE", "NOTOKEN", "T_INT", "T_REAL",
@@ -1831,7 +1831,7 @@ yyreduce:
 
   case 52:
 #line 310 "parse.yy"
-    {(yyval.node) = time_stride_win_node((yyvsp[(2) - (4)].node), (yyvsp[(4) - (4)].node));}
+    {(yyval.node) = time_slide_win_node((yyvsp[(2) - (4)].node), (yyvsp[(4) - (4)].node));}
     break;
 
   case 53:

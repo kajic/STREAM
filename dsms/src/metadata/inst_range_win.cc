@@ -25,7 +25,7 @@ int PlanManagerImpl::inst_range_win (Physical::Operator *op)
 	
 	if ((rc = window -> setWindowSize (op -> u.RANGE_WIN.timeUnits)) != 0)		
 		return rc;
-	if ((rc = window -> setWindowStride (op -> u.RANGE_WIN.strideUnits)) != 0)		
+	if ((rc = window -> setWindowStride (op -> u.RANGE_WIN.slideUnits)) != 0)		
 		return rc;
 	
 	ASSERT (op -> u.RANGE_WIN.winSyn);

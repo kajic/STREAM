@@ -34,7 +34,7 @@ namespace Execution {
 		Queue          *outputQueue;
         Timestamp       windowStart;
 		TimeDuration    windowSize;
-        TimeDuration    strideSize;
+        TimeDuration    slideSize;
 		WindowSynopsis *winSynopsis;
 		StorageAlloc   *inStore;
 		
@@ -54,7 +54,7 @@ namespace Execution {
 		int setOutputQueue (Queue *outputQueue);
 		int setInStore (StorageAlloc *inStore);
 		int setWindowSize (unsigned int windowSize);
-        int setWindowStride (unsigned int strideSize);
+        int setWindowStride (unsigned int slideSize);
 		int setWindowSynopsis (WindowSynopsis *winSynopsis);
 		
 		int run(TimeSlice timeSlice);
@@ -62,7 +62,7 @@ namespace Execution {
 	private:
 		int clearStall();
 		int expireTuples(Timestamp expTs);
-        int strideExpireTuples();
+        int slideExpireTuples();
 	};
 }
 

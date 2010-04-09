@@ -62,7 +62,7 @@
      RW_SUM = 278,
      RW_ROWS = 279,
      RW_RANGE = 280,
-     RW_STRIDE = 281,
+     RW_SLIDE = 281,
      RW_NOW = 282,
      RW_PARTITION = 283,
      RW_UNBOUNDED = 284,
@@ -111,7 +111,7 @@
 #define RW_SUM 278
 #define RW_ROWS 279
 #define RW_RANGE 280
-#define RW_STRIDE 281
+#define RW_SLIDE 281
 #define RW_NOW 282
 #define RW_PARTITION 283
 #define RW_UNBOUNDED 284

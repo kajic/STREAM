@@ -368,8 +368,8 @@ namespace Physical {
 			} ROW_WIN;
 			
 			struct {
-                // window stride
-                unsigned int strideUnits;
+                // window slide
+                unsigned int slideUnits;
                 
 				// window size
 				unsigned int timeUnits;

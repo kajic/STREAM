@@ -145,8 +145,8 @@ int Parser::get_id(char *s)
 		return RW_ROWS;   
 	if(!strcmp(string, "range"))
 		return RW_RANGE;    
-	if(!strcmp(string, "stride"))
-		return RW_STRIDE;        
+	if(!strcmp(string, "slide"))
+		return RW_SLIDE;        
 	if(!strcmp(string, "now"))
 		return RW_NOW;
 	if(!strcmp(string, "partition"))

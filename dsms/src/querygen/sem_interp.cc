@@ -533,7 +533,7 @@ static int interpretCondn (NODE *condn, BExpr& bexpr)
 /**
  * Convert a syntactic time-window node in a parse tree to the semantic
  * form.  This involves converting all window lengths to seconds.
- * Conversion will be done for the window range and for the window stride
+ * Conversion will be done for the window range and for the window slide
  * if it was set. 
  */
 static int interpretRangeWin(NODE *synWin, WindowSpec& semWin) 
@@ -544,12 +544,12 @@ static int interpretRangeWin(NODE *synWin, WindowSpec& semWin)
     	
 	// Canonicalize the timespecification
     for (unsigned int i = 0 ; i<2 ; i++) {
-        // First convert the window range, then the window stride
+        // First convert the window range, then the window slide
         if (i == 0) {
             timeSpec = synWin -> u.WINDOW_SPEC.time_spec;
         } else {
-            timeSpec = synWin -> u.WINDOW_SPEC.stride_spec;
-            // Continue if the window stride is set
+            timeSpec = synWin -> u.WINDOW_SPEC.slide_spec;
+            // Continue if the window slide is set
             if (timeSpec == 0) {
                 numSeconds[i] = 0;
                 continue;
@@ -589,7 +589,7 @@ static int interpretRangeWin(NODE *synWin, WindowSpec& semWin)
 	
 	semWin.type = RANGE;
 	semWin.u.RANGE.timeUnits = numSeconds[0];
-	semWin.u.RANGE.strideUnits = numSeconds[1];
+	semWin.u.RANGE.slideUnits = numSeconds[1];
 
 	return 0;
 }

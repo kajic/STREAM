@@ -636,7 +636,7 @@ static int applyWindow_n (Semantic::WindowSpec win,
 	case RANGE:
 		
 		winOp = mk_range_window (inputStr, win.u.RANGE.timeUnits, 
-          win.u.RANGE.strideUnits);
+          win.u.RANGE.slideUnits);
 		break;
 		
 	case ROW:

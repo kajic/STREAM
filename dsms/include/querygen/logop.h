@@ -198,7 +198,7 @@ namespace Logical {
 			
 			struct {
 				unsigned int timeUnits;
-                unsigned int strideUnits;
+                unsigned int slideUnits;
 			} RANGE_WIN;
 			
 			struct {
@@ -241,7 +241,7 @@ namespace Logical {
 	// Windows 
 	Operator *mk_row_window(Operator *input, unsigned int numRows);
 	Operator *mk_range_window(Operator *input, unsigned int timeUnits, 
-      unsigned int strideUnits);
+      unsigned int slideUnits);
 	Operator *mk_now_window(Operator *input);
 	Operator *mk_partn_window(Operator *input, unsigned int numRows);
 	Operator *partn_window_add_attr(Operator *pwin, Attr attr);

@@ -167,8 +167,8 @@ ostream& Logical::operator << (std::ostream& out, Operator *op)
 		out << "Range Window ["
 			<< op -> u.RANGE_WIN.timeUnits
 			<< "]"
-            << "(stride: "
-            << op -> u.RANGE_WIN.strideUnits
+            << "(slide: "
+            << op -> u.RANGE_WIN.slideUnits
             << ")"
 			<< " ("
 			<< op -> inputs [0] -> id

@@ -411,8 +411,8 @@ static BufOut& operator << (BufOut& bout, Operator *op)
 	case PO_RANGE_WIN:
 		bout << "<property name = \"Range\" value = \""
 			 << op -> u.RANGE_WIN.timeUnits
-             << "\" stride = \""
-             << op -> u.RANGE_WIN.strideUnits
+             << "\" slide = \""
+             << op -> u.RANGE_WIN.slideUnits
 			 << "\"/>\n";
 		
 		break;

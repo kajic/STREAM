@@ -464,8 +464,8 @@ ostream& Physical::operator << (ostream& out, Operator *op)
 			<< op -> u.RANGE_WIN.timeUnits
 			<< endl;
 
-		out << "Window stride: " 
-			<< op -> u.RANGE_WIN.strideUnits
+		out << "Window slide: " 
+			<< op -> u.RANGE_WIN.slideUnits
 			<< endl;
 		
 		out << "Window Synopsis: ";

@@ -265,7 +265,7 @@ NODE *time_win_node(NODE *time_spec) {
 	NODE *n = newnode(N_WINDOW_SPEC);
   
 	n -> u.WINDOW_SPEC.type = RANGE;
-    n -> u.WINDOW_SPEC.stride_spec = 0;
+    n -> u.WINDOW_SPEC.slide_spec = 0;
 	n -> u.WINDOW_SPEC.num_rows = 0;
 	n -> u.WINDOW_SPEC.time_spec = time_spec;
 	n -> u.WINDOW_SPEC.part_win_attr_list = 0;
@@ -273,11 +273,11 @@ NODE *time_win_node(NODE *time_spec) {
 	return n;
 }
 
-NODE *time_stride_win_node(NODE *time_spec, NODE *stride_spec) {
+NODE *time_slide_win_node(NODE *time_spec, NODE *slide_spec) {
 	NODE *n = newnode(N_WINDOW_SPEC);
   
 	n -> u.WINDOW_SPEC.type = RANGE;
-    n -> u.WINDOW_SPEC.stride_spec = stride_spec;
+    n -> u.WINDOW_SPEC.slide_spec = slide_spec;
 	n -> u.WINDOW_SPEC.num_rows = 0;
 	n -> u.WINDOW_SPEC.time_spec = time_spec;
 	n -> u.WINDOW_SPEC.part_win_attr_list = 0;
@@ -289,7 +289,7 @@ NODE *row_win_node(int num_rows) {
 	NODE *n = newnode(N_WINDOW_SPEC);
   
 	n -> u.WINDOW_SPEC.type = ROW;
-    n -> u.WINDOW_SPEC.stride_spec = 0;
+    n -> u.WINDOW_SPEC.slide_spec = 0;
 	n -> u.WINDOW_SPEC.num_rows = num_rows;
 	n -> u.WINDOW_SPEC.time_spec = 0;
 	n -> u.WINDOW_SPEC.part_win_attr_list = 0;
@@ -302,7 +302,7 @@ NODE *part_win_node(NODE *part_win_attr_list, int num_rows) {
 	NODE *n = newnode(N_WINDOW_SPEC);
   
 	n -> u.WINDOW_SPEC.type = PARTITION;
-    n -> u.WINDOW_SPEC.stride_spec = 0;
+    n -> u.WINDOW_SPEC.slide_spec = 0;
 	n -> u.WINDOW_SPEC.num_rows = num_rows;
 	n -> u.WINDOW_SPEC.time_spec = 0;
 	n -> u.WINDOW_SPEC.part_win_attr_list = part_win_attr_list;
@@ -314,7 +314,7 @@ NODE *now_win_node() {
 	NODE *n = newnode(N_WINDOW_SPEC);
   
 	n -> u.WINDOW_SPEC.type = NOW;
-    n -> u.WINDOW_SPEC.stride_spec = 0;
+    n -> u.WINDOW_SPEC.slide_spec = 0;
 	n -> u.WINDOW_SPEC.num_rows = 0;
 	n -> u.WINDOW_SPEC.time_spec = 0;
 	n -> u.WINDOW_SPEC.part_win_attr_list = 0;
@@ -326,7 +326,7 @@ NODE *unbounded_win_node() {
 	NODE *n = newnode(N_WINDOW_SPEC);
   
 	n -> u.WINDOW_SPEC.type = UNBOUNDED;
-    n -> u.WINDOW_SPEC.stride_spec = 0;
+    n -> u.WINDOW_SPEC.slide_spec = 0;
 	n -> u.WINDOW_SPEC.num_rows = 0;
 	n -> u.WINDOW_SPEC.time_spec = 0;
 	n -> u.WINDOW_SPEC.part_win_attr_list = 0;

@@ -53,7 +53,7 @@ static NODE* parse_tree;
 
 %token RW_ROWS
 %token RW_RANGE
-%token RW_STRIDE
+%token RW_SLIDE
 %token RW_NOW
 %token RW_PARTITION
 %token RW_UNBOUNDED
@@ -306,8 +306,8 @@ window_type
    : RW_RANGE time_spec
      {$$ = time_win_node($2);}
 
-   | RW_RANGE time_spec RW_STRIDE time_spec
-     {$$ = time_stride_win_node($2, $4);}
+   | RW_RANGE time_spec RW_SLIDE time_spec
+     {$$ = time_slide_win_node($2, $4);}
 
    | RW_NOW
      {$$ = now_win_node();}

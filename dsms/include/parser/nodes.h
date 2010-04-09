@@ -143,7 +143,7 @@ typedef struct node {
 			WinType              type;
 			int                  num_rows;
 			struct node         *time_spec;
-            struct node         *stride_spec;
+            struct node         *slide_spec;
 			struct node         *part_win_attr_list;
 		} WINDOW_SPEC;
 		
@@ -247,7 +247,7 @@ NODE *condn_node(CompOp op, NODE *left_exptr, NODE *right_expr);
 
 // WINDOW_SPEC
 NODE *time_win_node(NODE *time_spec);
-NODE *time_stride_win_node(NODE *time_spec, NODE *stride_spec);
+NODE *time_slide_win_node(NODE *time_spec, NODE *slide_spec);
 NODE *row_win_node(int num_rows);
 NODE *now_win_node();
 NODE *unbounded_win_node();
