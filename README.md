@@ -1,9 +1,9 @@
 Please see docs/user.pdf or docs/user.ps for details of installing and
 using STREAM.
 
-Added in this fork:
+# New in this fork
 
-Slide parameter to range windows. 
+Added slide parameter to range windows. 
 
 A slide must be specified immediately after the window operator
 RANGE. It is currently not possible to define a slide together
